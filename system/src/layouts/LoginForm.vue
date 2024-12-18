@@ -36,7 +36,7 @@ export default {
 
 <template>
   <v-card class="bg-card custom-card" elevation="8">
-    <h1 class="text-center py-8">SendEase</h1>
+    <h1 class="text-center py-8 title">SendEase</h1>
 
     <v-form ref="form" @submit.prevent="handleLogin">
   <!-- Email Field -->
@@ -73,6 +73,8 @@ export default {
 </template>
 
 <style scoped>
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
 .custom-card {
   background-color: black; /* Set card/form background to black */
   color: white; /* Text color to white for contrast */
@@ -81,4 +83,11 @@ export default {
 .v-btn{
   background-color: rgb(97, 43, 42);
 }
+.title{
+  font-family: 'Unbounded', Arial, sans-serif;
+}
+.v-form{
+  font-family: 'Wix Madefor Display', sans-serif;                              
+}
+
 </style>
