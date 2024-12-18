@@ -41,14 +41,12 @@ const switchToRegister = () => (showRegister.value = true);
   </v-container>
 
   <!-- Dialog for Register Form -->
-  <v-dialog v-model="showRegister" persistent max-width="500px">
-    <v-card class="custom-card px-10">
-      <v-card-text>
-        <register-form v-model="showRegister">
-          <template #footer></template>
-        </register-form>
-      </v-card-text>
-    </v-card>
+  <v-dialog v-model="showRegister" persistent max-width="550px">
+    <v-card-text>
+      <register-form v-model="showRegister">
+        <template #footer></template>
+      </register-form>
+    </v-card-text>
   </v-dialog>
 </template>
 
@@ -63,6 +61,10 @@ const switchToRegister = () => (showRegister.value = true);
   background-color: rgb(97, 43, 42); /* Background color for the entire page */
   margin: 0;
   padding: 0;
+}
+::v-deep(.v-overlay__scrim) {
+  backdrop-filter: blur(40px) !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
 }
 </style>
 
