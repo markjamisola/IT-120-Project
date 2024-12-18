@@ -1,44 +1,51 @@
 <template>
-  <v-card class="bg-card" elevation="24">
-    <h1 class="text-center pt-6 pb-4">Create an account</h1>
+  <v-card class=" custom-card px-8" elevation="8">
+    <h1 class="text-center pt-5 title">SendEase</h1>
+    <h2 class="text-center pt-6 pb-4">Create an account</h2>
     <v-form ref="form" @submit.prevent="handleRegister">
       <v-text-field
         v-model="username"
-        color="blue-lighten-2"
         label="Username"
         required
-        outlined
+        variant="outlined"
+        prepend-inner-icon="mdi-account-outline"
       />
       <v-text-field
         v-model="email"
-        color="blue-lighten-2"
         label="Email"
         type="email"
         required
-        outlined
+        variant="outlined"
+        prepend-inner-icon="mdi-email-outline"
       />
       <v-text-field
         v-model="password"
-        color="blue-lighten-2"
         label="Password"
-        type="password"
+        :type="passwordVisible ? 'text' : 'password'"
         required
-        outlined
+        variant="outlined"
+        prepend-inner-icon="mdi-lock-outline"
+        :append-inner-icon="passwordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="passwordVisible = !passwordVisible"
       />
+
       <v-text-field
         v-model="confirmPassword"
-        color="blue-lighten-2"
         label="Confirm Password"
-        type="password"
+        :type="confirmPasswordVisible ? 'text' : 'password'"
         required
-        outlined
+        variant="outlined"
+        prepend-inner-icon="mdi-lock-outline"
+        :append-inner-icon="confirmPasswordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="confirmPasswordVisible = !confirmPasswordVisible"
       />
+
       <v-row class="pb-10 pt-2">
         <v-col>
-          <v-btn @click="handleBack" color="grey-darken-2" block>Back</v-btn>
+          <v-btn @click="handleBack" color="white" block>Back</v-btn>
         </v-col>
         <v-col>
-          <v-btn type="submit" color="primary" block>Submit</v-btn>
+          <v-btn type="submit" block>Submit</v-btn>
         </v-col>
       </v-row>
     </v-form>
@@ -46,8 +53,8 @@
 </template>
 
 <script>
-import { useAuthStore } from "@/stores/auth"; // Import the authStore
 import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   props: {
@@ -59,8 +66,11 @@ export default {
     const authStore = useAuthStore();
     const username = ref("");
     const email = ref("");
+    const toast = ref("");
     const password = ref("");
     const confirmPassword = ref("");
+    const passwordVisible = ref(false); // For toggling password visibility
+    const confirmPasswordVisible = ref(false); // For toggling confirm password visibility
 
     const handleRegister = async () => {
       if (
@@ -82,8 +92,6 @@ export default {
 
       if (success) {
         emit("update:modelValue", false); // Close dialog after successful registration
-      } else {
-        // Error handling is done in the authStore
       }
     };
 
@@ -96,6 +104,8 @@ export default {
       email,
       password,
       confirmPassword,
+      passwordVisible,
+      confirmPasswordVisible,
       handleRegister,
       handleBack,
     };
@@ -104,5 +114,20 @@ export default {
 </script>
 
 <style scoped>
-
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+.custom-card {
+  background-color: black; /* Set card/form background to black */
+  color: white; /* Text color to white for contrast */
+  border-radius: 20px; /* Optional: rounded corners for aesthetics */
+}
+.v-btn{
+  background-color: rgb(97, 43, 42);
+}
+.title{
+  font-family: 'Unbounded', Arial, sans-serif;
+}
+.v-form{
+  font-family: 'Wix Madefor Display', sans-serif;                              
+}
 </style>

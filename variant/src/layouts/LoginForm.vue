@@ -1,32 +1,3 @@
-<template>
-  <v-card class="bg-card" elevation="8">
-    <h1 class="text-center py-8">$Receiver</h1>
-
-    <v-form ref="form" @submit.prevent="handleLogin">
-      <v-text-field
-        v-model="email"
-        color="blue-lighten-2"
-        label="Email"
-        type="email"
-        required
-        outlined
-      />
-      <v-text-field
-        v-model="password"
-        color="blue-lighten-2"
-        label="Password"
-        type="password"
-        required
-        outlined
-      />
-      <v-btn type="submit" color="primary" class="mt-1" size="large" block
-        >Login</v-btn
-      >
-    </v-form>
-    <slot name="footer" />
-  </v-card>
-</template>
-
 <script>
 import { useAuthStore } from "@/stores/auth"; // Importing the merged auth store
 import { ref } from "vue";
@@ -39,6 +10,8 @@ export default {
     const router = useRouter();
     const email = ref(""); // Bind email input
     const password = ref(""); // Bind password input
+    const visible = ref(false); // For toggling password visibility
+
    
 
     const handleLogin = async () => {
@@ -54,11 +27,67 @@ export default {
       }
     };
 
-    return { email, password, handleLogin };
+    return { email, password, handleLogin, visible };
   },
 };
 </script>
 
+
+
+<template>
+  <v-card class="bg-card custom-card" elevation="8">
+    <h1 class="text-center py-8 title">SendEase</h1>
+
+    <v-form ref="form" @submit.prevent="handleLogin">
+  <!-- Email Field -->
+  <v-text-field
+    v-model="email" 
+    density="compact"
+    label="Email"
+    type="email"
+    prepend-inner-icon="mdi-email-outline"
+    variant="outlined"
+    required
+  ></v-text-field>
+
+  <!-- Password Field -->
+  <v-text-field
+    v-model="password" 
+    :append-inner-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
+    :type="visible ? 'text' : 'password'"
+    density="compact"
+    label="Password"
+    prepend-inner-icon="mdi-lock-outline"
+    variant="outlined"
+    @click:append-inner="visible = !visible"
+    required
+  ></v-text-field>
+
+  <v-btn type="submit" class="mt-1" size="large" block>
+    Login
+  </v-btn>
+</v-form>
+
+    <slot name="footer" />
+  </v-card>
+</template>
+
 <style scoped>
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+.custom-card {
+  background-color: black; /* Set card/form background to black */
+  color: white; /* Text color to white for contrast */
+  border-radius: 12px; /* Optional: rounded corners for aesthetics */
+}
+.v-btn{
+  background-color: rgb(97, 43, 42);
+}
+.title{
+  font-family: 'Unbounded', Arial, sans-serif;
+}
+.v-form{
+  font-family: 'Wix Madefor Display', sans-serif;                              
+}
 
 </style>
