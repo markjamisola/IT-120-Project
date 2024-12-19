@@ -5,11 +5,15 @@
       <v-col cols="12" md="4">
         <v-card class="mb-3" elevation="2">
           <v-card-title>
-            <div class="headline">Availabe Users</div>
+            <div class="headline">Available Users</div>
           </v-card-title>
           <v-list>
             <v-list-item-group v-if="filteredUsers.length > 0">
-              <v-list-item v-for="user in filteredUsers" :key="user.id" @click="selectReceiver(user)">
+              <v-list-item
+                v-for="user in filteredUsers"
+                :key="user.id"
+                @click="selectReceiver(user)"
+              >
                 <v-list-item-avatar>
                   <v-img :src="user.avatar" />
                 </v-list-item-avatar>
@@ -35,25 +39,28 @@
               <v-img :src="selectedReceiver.avatar" />
             </v-avatar>
             <div>
-              
-              <div class="caption">Send By: {{ selectedReceiver.name }}</div>
+              <div class="caption">Chatting with: {{ selectedReceiver.name }}</div>
             </div>
-            <!-- <router-link class="d-flex justify-end" to="/dashboard" style="text-decoration: none;">
-              <v-btn color="primary">Back</v-btn>
-            </router-link> -->
           </v-card-title>
 
           <v-card-subtitle>
             <v-scroll-y class="message-list">
               <v-list>
-                <v-list-item-group v-if="messages && messages.length > 0">
-                  <v-list-item v-for="message in messages" :key="message.id">
+                <v-list-item-group v-if="combinedMessages.length > 0">
+                  <v-list-item v-for="message in combinedMessages" :key="message.id">
                     <v-list-item-content>
                       <v-list-item-title>
-                        <v-card class="pa-3 mb-3"> <h4>{{ message.content }}</h4></v-card>
+                        <v-card
+                          class="pa-3 mb-3"
+                          :class="{
+                            'sent-message': message.isSentByMe,
+                            'received-message': !message.isSentByMe,
+                          }"
+                        >
+                          <h4>{{ message.content }}</h4>
+                        </v-card>
                       </v-list-item-title>
-                      <span class="mx-5">{{ message.timestamp }}</span>
-                      <span class="mx-5">Ensure that your secrets are safe with us.</span>
+                      <span class="mx-5">{{ formatTimestamp(message.timestamp) }}</span>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -66,25 +73,24 @@
             </v-scroll-y>
           </v-card-subtitle>
 
-          <!-- Message Input -->
-          
-        </v-card>
-
-        <!-- Reply messages -->
-     
-
-        <v-card v-else class="pa-3 mt-3" elevation="2">
-          <v-card-title>
-            <div class="headline">No replies yet</div>
-          </v-card-title>
+          <v-card-actions>
+            <v-text-field
+              v-model="replyMessage"
+              label="Enter your reply"
+              outlined
+            ></v-text-field>
+            <v-btn color="primary" @click="sendReply">Reply</v-btn>
+          </v-card-actions>
         </v-card>
 
         <v-card v-else class="pa-3" elevation="2">
           <v-card-title>
-            <div class="headline">Select a user to whom you want to whisper.</div>
+            <div class="headline">Select a user to chat with</div>
           </v-card-title>
           <v-card-subtitle>
-            <div class="caption">Click on a user from the Inbox to start a chat.Ensure that your secrets are safe with us.</div>
+            <div class="caption">
+              Click on a user from the inbox to start a chat.
+            </div>
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -93,120 +99,188 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import CryptoJS from "crypto-js";
+
+const ENCRYPTION_KEY = "3aIYac2hijTnCvnQ_cYTOEiCReFBHyI3APLJxi9HAfY=";
 
 export default {
   data() {
     return {
-      user: {
-        id: null,
-        name: '',
-        avatar: '',
-      },
+      user: {},
       users: [],
       selectedReceiver: null,
-      newMessage: '',
-      messages: [], // Default value is an empty array to avoid undefined errors
-      replies: [], // Default value is an empty array to avoid undefined errors
+      messages: [],
+      replies: [],
+      replyMessage: "", // Input for reply
     };
   },
   created() {
     this.fetchUserData();
     this.fetchUsers();
-    this.startMessagePolling(); // Start polling for new replies
+    this.startMessagePolling();
   },
   computed: {
     filteredUsers() {
-      return this.users.filter(user => user.id !== this.user.id);
-    }
+      return this.users.filter((user) => user.id !== this.user.id);
+    },
+    combinedMessages() {
+      return [...this.messages, ...this.replies]
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .map((msg) => ({
+          ...msg,
+          isSentByMe: msg.sender_id === this.user.id,
+        }));
+    },
   },
   methods: {
     async fetchUserData() {
       try {
-        const userResponse = await axios.get('http://localhost:8000/api/me/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
+        const response = await axios.get("http://localhost:8000/api/me/", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         });
-        this.user = userResponse.data;
-        this.fetchMessages();
+        this.user = response.data;
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     },
     async fetchUsers() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/users/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
+        const response = await axios.get("http://127.0.0.1:8000/api/users/", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         });
-        if (response.data.status === 'success' && Array.isArray(response.data.data.users)) {
-          this.users = response.data.data.users;
-        }
+        this.users = response.data.data.users || [];
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
       }
     },
     selectReceiver(user) {
       this.selectedReceiver = user;
       this.fetchMessages();
-      this.replies = []; // Clear previous replies when switching users
+      this.fetchReplies();
     },
     async fetchMessages() {
-      if (!this.selectedReceiver) return;
       try {
-        const receiverId = this.selectedReceiver.id;
-
-        const response = await axios.get('http://127.0.0.1:8000/chat/api/messages/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-          params: {
-            receiver_id: receiverId,
-            sender_id: this.user.id,
-          },
-        });
-
-        this.messages = response.data;
-        this.fetchReplies(); // Fetch replies from the selected receiver
+        const response = await axios.get(
+          "http://127.0.0.1:8000/chat/api/messages/",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            params: {
+              receiver_id: this.selectedReceiver.id,
+              sender_id: this.user.id,
+            },
+          }
+        );
+        this.messages = response.data.map((msg) => ({
+          ...msg,
+          content: this.decryptMessage(msg.content),
+        }));
       } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error("Error fetching messages:", error);
       }
     },
     async fetchReplies() {
-      if (!this.selectedReceiver) return;
       try {
-        const receiverId = this.selectedReceiver.id;
+        const response = await axios.get(
+          "http://127.0.0.1:8000/chat/api/conversation-messages/",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            params: {
+              sender_id: this.selectedReceiver.id,
+              receiver_id: this.user.id,
+            },
+          }
+        );
+        this.replies = response.data.map((reply) => ({
+          ...reply,
+          content: this.decryptMessage(reply.content),
+        }));
+      } catch (error) {
+        console.error("Error fetching replies:", error);
+      }
+    },
+    async sendReply() {
+      if (!this.selectedReceiver || !this.replyMessage) return;
 
-        const response = await axios.get('http://127.0.0.1:8000/chat/api/conversation-messages/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-          params: {
-            sender_id: receiverId, // Get replies from the selected user
-            receiver_id: this.user.id,
-          },
+      // Encrypt the reply message
+      const encryptedMessage = CryptoJS.AES.encrypt(
+        this.replyMessage,
+        ENCRYPTION_KEY
+      ).toString();
+
+      const messageData = {
+        sender: this.user.id,
+        receiver: this.selectedReceiver.id,
+        content: encryptedMessage,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/chat/api/messages/",
+          messageData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Update the messages array locally with decrypted message for display
+        this.messages.push({
+          id: response.data.id,
+          content: this.replyMessage,
+          sender_name: this.user.name,
+          timestamp: messageData.timestamp,
         });
 
-        this.replies = response.data; // Store the replies
+        this.replyMessage = ""; // Clear the input
       } catch (error) {
-        console.error('Error fetching replies:', error);
+        console.error("Error sending reply:", error);
       }
     },
     startMessagePolling() {
-      // Polling to fetch new messages every 5 seconds
       setInterval(() => {
         if (this.selectedReceiver) {
           this.fetchMessages();
           this.fetchReplies();
         }
-      }, 2000);
+      }, 1000);
     },
-   
+    decryptMessage(encryptedContent) {
+  try {
+    // Attempt to decrypt the message
+    const bytes = CryptoJS.AES.decrypt(encryptedContent, ENCRYPTION_KEY);
+    const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8);
+
+    // Check if decryption was successful
+    if (!decryptedMessage) throw new Error("Decryption returned an empty string");
+
+    return decryptedMessage;
+  } catch (error) {
+    console.error("Error decrypting message:", error);
+
+    // Return a fallback or placeholder for decryption failure
+    return "[Decryption failed: Invalid or corrupted content]";
   }
+}
+,
+    formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    },
+  },
 };
 </script>
+
+
+
+
 <style scoped>
 .headline {
   font-size: 1.5em;
