@@ -130,8 +130,10 @@ export default {
   },
   computed: {
     filteredUsers() {
-      return this.users.filter((user) => user.id !== this.user.id);
-    },
+    return this.users.filter(
+      (user) => user.id !== this.user.id && user.email !== "admin@gmail.com"
+    );
+  },
     combinedMessages() {
   const messages = [...this.messages, ...this.replies]
     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))

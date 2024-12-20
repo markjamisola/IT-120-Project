@@ -22,7 +22,7 @@ export default {
        alert("Login successful"); 
         // Redirect to the previously requested page, or to /dashboard if none is specified
         const redirect =
-          router.currentRoute.value.query.redirect || "/dashboard";
+          router.currentRoute.value.query.redirect || "/app1";
         router.push(redirect);
       }
     };

@@ -1,43 +1,38 @@
 <script>
-import { useAuthStore } from "@/stores/auth"; // Importing the merged auth store
+import { useAuthStore } from "@/stores/auth";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
 
 export default {
   setup() {
     const authStore = useAuthStore(); // Access the auth store
-    const router = useRouter();
-    const email = ref(""); // Bind email input
-    const password = ref(""); // Bind password input
-    const visible = ref(false); // For toggling password visibility
-
-   
+    const router = useRouter(); // Router instance for navigation
+    const email = ref("");
+    const password = ref("");
+    const visible = ref(false);
 
     const handleLogin = async () => {
-  const success = await authStore.login(email.value, password.value); // Use the store's login action
-  if (!success) {
-    //alert("Login failed");
-  } else {
-    //alert("Login successful");
-
-    // Check if the logged-in email is "user3@gmail.com"
-    if (email.value === "user3@gmail.com") {
-      // Redirect directly to the dashboard
-      router.push("/dashboard");
-    } else {
-      // Redirect to the previously requested page, or to /dashboard if none is specified
-      const redirect = router.currentRoute.value.query.redirect || "/dashboard";
-      router.push(redirect);
-    }
-  }
-};
-
+      const success = await authStore.login(email.value, password.value);
+      if (success) {
+        if (email.value === "admin@gmail.com") {
+          // Admin goes to dashboard
+          localStorage.setItem("activeTab", "dashboard");
+          router.push("/dashboard"); // Navigate to the dashboard
+        } else {
+          // Non-admin goes to chats
+          localStorage.setItem("activeTab", "chats");
+          router.push("/app2"); // Navigate to the dashboard
+        }
+      } else {
+        alert("Login failed. Please check your credentials.");
+      }
+    };
 
     return { email, password, handleLogin, visible };
   },
 };
 </script>
+
 
 
 
