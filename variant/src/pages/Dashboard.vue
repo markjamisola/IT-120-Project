@@ -66,10 +66,10 @@
     <div class="floating-buttons">
       <!-- Show Dashboard Button only if the user is not user3@gmail.com -->
       <v-btn
-        v-if="authStore.user?.email === 'user3@gmail.com'"
+        v-if="authStore.user?.email === 'mytakaf@mailinator.com'"
         class="floating-btn"
-        color="#151515"
         dark
+        style="background-color: white; color: black;"
         elevation="15"
         @click="activeTab = 'dashboard'"
       >
@@ -78,9 +78,9 @@
       
       <!-- Show Chats Button only if the user is user3@gmail.com -->
       <v-btn
-        v-if="authStore.user?.email !== 'user3@gmail.com'"
+        v-if="authStore.user?.email !== 'mytakaf@mailinator.com'"
         class="floating-btn"
-        color="#151515"
+        style="background-color: white; color: black;"
         dark
         elevation="15"
         @click="activeTab = 'chats'"
@@ -147,7 +147,7 @@ onMounted(() => {
   // Log the email to check if it's correct
   console.log("Logged-in user email:", authStore.user?.email);
 
-  if (authStore.user?.email === "user3@gmail.com") {
+  if (authStore.user?.email === "mytakaf@mailinator.com") {
     console.log("User is user3@gmail.com");
     isUser3.value = true; // Set flag to disable chat access
     activeTab.value = "dashboard"; // Force the activeTab to be 'dashboard'
@@ -203,6 +203,7 @@ watch(activeTab, (newTab) => {
   padding: 10px 20px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
+  background-color: white;
 }
 
 .floating-btn:hover {

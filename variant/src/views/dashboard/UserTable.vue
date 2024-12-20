@@ -62,23 +62,21 @@ const fetchEncryptedMessages = async () => {
 
 <template>
   <!-- User Table -->
-  <v-card>
+  <v-card class="table-card">
     <v-data-table
       :headers="userHeaders"
       :items="userData"
       item-value="id"
+      class="custom-table"
     >
       <!-- User ID -->
       <template #item.id="{ item }">
-        <span>{{ item.id }}</span> <!-- Ensure this is rendering the ID correctly -->
+        <span>{{ item.id }}</span>
       </template>
 
       <!-- User -->
       <template #item.username="{ item }">
         <div class="d-flex align-center" style="gap: 15px">
-          <v-avatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-            <v-img v-if="item.avatar" :src="item.avatar" />
-          </v-avatar>
           <div class="d-flex flex-column">
             <h6 class="text-h6 font-weight-medium user-list-name">
               {{ item.username }}
@@ -101,12 +99,12 @@ const fetchEncryptedMessages = async () => {
   </v-card>
 
   <!-- Encrypted Messages Table -->
-  <v-card class="mt-4">
+  <v-card class="table-card mt-4">
     <v-data-table
       :headers="messageHeaders"
       :items="messages"
       item-value="id"
-      class="text-no-wrap"
+      class="custom-table"
     >
       <!-- Encrypted Content -->
       <template #item.content="{ item }">
@@ -115,3 +113,40 @@ const fetchEncryptedMessages = async () => {
     </v-data-table>
   </v-card>
 </template>
+
+<style scoped>
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+.table-card {
+  background-color: black; /* Card background color */
+  border-radius: 12px; /* Rounded corners */
+  overflow: hidden; /* Ensure rounded corners are applied properly */
+}
+
+::v-deep(.custom-table) {
+  background-color: black; /* Table background color */
+  color: white; /* Text color */
+}
+
+::v-deep(.custom-table thead th) {
+  background-color: #282828; /* Header background color */
+  color: rgb(255, 255, 255); /* Header text color */
+  font-weight: bold;
+  font-family: 'Unbounded', Arial, sans-serif;
+  font-size: 18px; /* Adjust font size as needed */
+}
+
+::v-deep(.custom-table thead th:hover) {
+  color: rgb(0, 0, 0); /* Header text color */
+  font-weight: bold;
+}
+
+::v-deep(.custom-table tbody tr) {
+  border-bottom: 1px solid #444; /* Row border */
+  font-family: 'Wix Madefor Display', sans-serif;  
+}
+
+::v-deep(.custom-table tbody tr:hover) {
+  background-color: #333; /* Highlight on hover */
+}
+</style>

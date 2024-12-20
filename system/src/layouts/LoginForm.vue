@@ -35,10 +35,16 @@ export default {
 
 
 <template>
+      <v-img
+      src="/sendease.png"
+      alt="SendEase Logo"
+      contain
+      class="logo my-9"
+      style="width: 100%; height: 100px; margin: 0 auto;"
+    ></v-img>
   <v-card class="bg-card custom-card" elevation="8">
-    <h1 class="text-center py-8 title">SendEase</h1>
 
-    <v-form ref="form" @submit.prevent="handleLogin">
+    <v-form class="mt-3" ref="form" @submit.prevent="handleLogin">
   <!-- Email Field -->
   <v-text-field
     v-model="email" 

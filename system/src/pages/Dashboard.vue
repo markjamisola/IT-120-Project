@@ -78,7 +78,7 @@
         elevation="15"
         @click="activeTab = 'dashboard'"
       >
-        <v-icon left>mdi-view-dashboard</v-icon> Dashboard
+        <v-icon left>mdi-account-group</v-icon>Active Users
       </v-btn>
       <v-btn
         class="floating-btn"
