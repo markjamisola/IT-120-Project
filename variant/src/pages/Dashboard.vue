@@ -92,6 +92,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import UserTable from "@/views/dashboard/UserTable.vue";
 import ChatBox from "@/components/ChatBox.vue";
+import { id } from "vuetify/locale";
 
 const users = ref([]);
 const activeTab = ref(localStorage.getItem("activeTab") || "dashboard");
@@ -105,6 +106,7 @@ const fetchUsers = async () => {
       },
     });
     users.value = response.data.data.users.map((user) => ({
+      id: user.id,
       username: user.name,
       email: user.email,
       status: "active",
