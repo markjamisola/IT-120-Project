@@ -3,7 +3,7 @@
     <v-row>
       <!-- Inbox (left sidebar) -->
       <v-col cols="12" md="4">
-        <v-card class="inbox-card" elevation="2">
+        <v-card class="inbox-card" elevation="15">
           <v-card-title class="inbox-title">
             <div>Available Users</div>
           </v-card-title>
@@ -34,7 +34,7 @@
 
       <!-- Chat Box (right section) -->
       <v-col cols="12" md="8">
-        <v-card v-if="selectedReceiver" class="chat-card" elevation="2">
+        <v-card v-if="selectedReceiver" class="chat-card" elevation="15">
           <v-card-title class="chat-header">
             <v-avatar class="receiver-avatar">
               <v-img :src="selectedReceiver.avatar" />
@@ -47,7 +47,7 @@
 
           <v-card-subtitle>
             <v-scroll-y class="message-container">
-              <v-list>
+              <v-list class="lista">
                       <v-list-item-group v-if="combinedMessages.length > 0">
                         <v-list-item v-for="message in combinedMessages" :key="message.id">
                           <v-list-item-content>
@@ -84,15 +84,15 @@
               dense
               class="message-input"
             />
-            <v-btn @click="sendMessage" :disabled="!newMessage" class="send-button" color="primary">
+            <v-btn @click="sendMessage" :disabled="!newMessage" class="send-button px-7" color="white">
               Send
             </v-btn>
           </v-card-actions>
         </v-card>
 
-        <v-card v-else class="empty-chat-card" elevation="2">
+        <v-card v-else class="empty-chat-card">
           <v-card-title>
-            <div class="empty-chat-title">Select a user to chat with</div>
+            <div class="empty-chat-title pt-9">Select a user to chat with</div>
           </v-card-title>
           <v-card-subtitle>
             <div class="empty-chat-caption">
@@ -281,16 +281,17 @@ export default {
 };
 </script>
 
-
-
-
-
 <style scoped>
-/* General Styles */
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
 .headline {
   font-size: 1.5em;
   font-weight: bold;
   font-family: "monospace";
+}
+
+.lista{
+background-color: #000;
 }
 
 .caption {
@@ -300,7 +301,7 @@ export default {
 
 /* Inbox Styles */
 .inbox-card {
-  background-color: #f9f9f9;
+  background-color: #000000;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -308,18 +309,24 @@ export default {
 .inbox-title {
   font-size: 1.2em;
   font-weight: 600;
-  background-color: #1976d2;
+  background-color: #282828;
   color: white;
   padding: 10px;
+  text-align: center;
+  font-family: 'Unbounded', Arial, sans-serif;
+
 }
 
 .user-item {
   cursor: pointer;
   transition: background-color 0.3s;
+  background-color: #000;
+  font-family: 'Wix Madefor Display', sans-serif;  
 }
 
 .user-item:hover {
-  background-color: #e3f2fd;
+  background-color: #ffffff;
+  color: #000;
 }
 
 .user-avatar {
@@ -329,24 +336,28 @@ export default {
 .user-name {
   font-weight: bold;
   font-size: 1.1em;
+  text-align: center;
 }
 
 /* Chat Box Styles */
 .chat-card {
-  background-color: #fff;
+  background-color: #000000;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-family: 'Wix Madefor Display', sans-serif;  
+
 }
 
 .chat-header {
-  background-color: #1976d2;
+  background-color: #282828;
   color: white;
   padding: 15px;
   display: flex;
   align-items: center;
+  font-family: 'Unbounded', Arial, sans-serif;
 }
 
 .receiver-avatar {
@@ -368,7 +379,7 @@ export default {
   max-height: 500px;
   overflow-y: auto;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: #000000;
   display: flex;
   flex-direction: column;
 }
@@ -404,11 +415,12 @@ export default {
 .message-text {
   font-size: 1em;
   line-height: 1.4;
+  font-weight: bold;
 }
 
 .timestamp {
   font-size: 0.8em;
-  color: gray;
+  color: rgb(0, 0, 0);
   display: block;
   margin-top: 5px;
   text-align: right;
@@ -416,41 +428,50 @@ export default {
 
 /* Input Styles */
 .input-container {
-  padding: 10px;
-  background-color: #f0f0f0;
+
+  background-color: #000000;
   display: flex;
   align-items: center;
 }
 
 .message-input {
   flex-grow: 1;
-  margin-right: 10px;
+  margin-right: 20px;
   border-radius: 20px;
-  padding: 10px;
   background-color: #ffffff;
   border: 1px solid #ddd;
   color: black;
+  margin-left: 30px;
+  margin-bottom: 20px;
 }
 
 .send-button {
   border-radius: 20px;
-  padding: 0 20px;
+  background-color: #803d3b;
+  margin-right: 20px;
+  font-weight: bold;
 }
 
 /* Empty Chat Styles */
 .empty-chat-card {
   text-align: center;
-  background-color: #000000;
-  border-radius: 10px;
+  background-color: transparent;
+
+  padding-bottom: 50px;
+  border: none; /* Remove any border */
+  box-shadow: none; /* Remove shadow */
 }
 
 .empty-chat-title {
   font-size: 1.2em;
   font-weight: bold;
+  font-family: 'Unbounded', Arial, sans-serif;
+
 }
 
 .empty-chat-caption {
   font-size: 1em;
-  color: grey;
+  color: rgb(255, 255, 255);
+  font-family: 'Wix Madefor Display', sans-serif;  
 }
 </style>

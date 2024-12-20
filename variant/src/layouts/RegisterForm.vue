@@ -1,6 +1,12 @@
 <template>
   <v-card class=" custom-card px-8" elevation="8">
-    <h1 class="text-center pt-5 title">SendEase</h1>
+    <v-img
+      src="/sendease.png"
+      alt="SendEase Logo"
+      contain
+      class="logo mt-3"
+      style="width: 70%; height: 100px; margin: 0 auto;"
+    ></v-img>
     <h2 class="text-center pt-6 pb-4">Create an account</h2>
     <v-form ref="form" @submit.prevent="handleRegister">
       <v-text-field

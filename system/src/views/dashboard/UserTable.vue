@@ -35,19 +35,16 @@ const resolveUserStatusVariant = (stat) => {
 </script>
 
 <template>
-  <v-card>
+  <v-card class="table-card">
     <v-data-table
       :headers="headers"
       :items="userData"
       item-value="id"
-      class="text-no-wrap"
+      class=" custom-table"
     >
       <!-- User -->
       <template #item.username="{ item }">
         <div class="d-flex align-center" style="gap: 15px">
-          <v-avatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-            <v-img v-if="item.avatar" :src="item.avatar" />
-          </v-avatar>
 
           <div class="d-flex flex-column">
             <h6 class="text-h6 font-weight-medium user-list-name">
@@ -71,3 +68,39 @@ const resolveUserStatusVariant = (stat) => {
     </v-data-table>
   </v-card>
 </template>
+<style scoped>
+@import url('https://fonts.cdnfonts.com/css/unbounded');
+@import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+.table-card {
+  background-color: black; /* Card background color */
+  border-radius: 12px; /* Rounded corners */
+  overflow: hidden; /* Ensure rounded corners are applied properly */
+}
+
+::v-deep(.custom-table) {
+  background-color: black; /* Table background color */
+  color: white; /* Text color */
+}
+
+::v-deep(.custom-table thead th) {
+  background-color: #282828; /* Header background color */
+  color: rgb(255, 255, 255); /* Header text color */
+  font-weight: bold;
+  font-family: 'Unbounded', Arial, sans-serif;
+  font-size: 18px; /* Adjust font size as needed */
+}
+
+::v-deep(.custom-table thead th:hover) {
+  color: rgb(0, 0, 0); /* Header text color */
+  font-weight: bold;
+}
+
+::v-deep(.custom-table tbody tr) {
+  border-bottom: 1px solid #444; /* Row border */
+  font-family: 'Wix Madefor Display', sans-serif;  
+}
+
+::v-deep(.custom-table tbody tr:hover) {
+  background-color: #333; /* Highlight on hover */
+}
+</style>
