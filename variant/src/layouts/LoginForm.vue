@@ -15,17 +15,24 @@ export default {
    
 
     const handleLogin = async () => {
-      const success = await authStore.login(email.value, password.value); // Use the store's login action
-      if (!success) {
-       alert("Login failed"); 
-      } else {
-       alert("Login successful"); 
-        // Redirect to the previously requested page, or to /dashboard if none is specified
-        const redirect =
-          router.currentRoute.value.query.redirect || "/dashboard";
-        router.push(redirect);
-      }
-    };
+  const success = await authStore.login(email.value, password.value); // Use the store's login action
+  if (!success) {
+    //alert("Login failed");
+  } else {
+    //alert("Login successful");
+
+    // Check if the logged-in email is "user3@gmail.com"
+    if (email.value === "user3@gmail.com") {
+      // Redirect directly to the dashboard
+      router.push("/dashboard");
+    } else {
+      // Redirect to the previously requested page, or to /dashboard if none is specified
+      const redirect = router.currentRoute.value.query.redirect || "/dashboard";
+      router.push(redirect);
+    }
+  }
+};
+
 
     return { email, password, handleLogin, visible };
   },

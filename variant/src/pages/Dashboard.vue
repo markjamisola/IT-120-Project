@@ -64,7 +64,9 @@
 
     <!-- Floating Buttons -->
     <div class="floating-buttons">
+      <!-- Show Dashboard Button only if the user is not user3@gmail.com -->
       <v-btn
+        v-if="authStore.user?.email === 'user3@gmail.com'"
         class="floating-btn"
         color="#151515"
         dark
@@ -73,7 +75,10 @@
       >
         <v-icon left>mdi-view-dashboard</v-icon> Dashboard
       </v-btn>
+      
+      <!-- Show Chats Button only if the user is user3@gmail.com -->
       <v-btn
+        v-if="authStore.user?.email !== 'user3@gmail.com'"
         class="floating-btn"
         color="#151515"
         dark
@@ -86,18 +91,23 @@
   </v-app>
 </template>
 
+
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import UserTable from "@/views/dashboard/UserTable.vue";
 import ChatBox from "@/components/ChatBox.vue";
-import { id } from "vuetify/locale";
 
 const users = ref([]);
 const activeTab = ref(localStorage.getItem("activeTab") || "dashboard");
 const logoutModal = ref(false);
+const authStore = useAuthStore();
 
+// Flag to check if the logged-in user is user3@gmail.com
+const isUser3 = ref(false);
+
+// Fetch user data
 const fetchUsers = async () => {
   try {
     const response = await axios.get("http://127.0.0.1:8000/api/users/", {
@@ -116,13 +126,13 @@ const fetchUsers = async () => {
   }
 };
 
+// Handle the logout confirmation modal
 const showLogoutConfirmation = () => {
   logoutModal.value = true;
 };
 
 const confirmLogout = () => {
   logoutModal.value = false;
-  const authStore = useAuthStore();
   authStore.logout();
 };
 
@@ -130,12 +140,28 @@ const cancelLogout = () => {
   logoutModal.value = false;
 };
 
-onMounted(fetchUsers);
+// Check if user is "user3@gmail.com" and restrict access to "chats"
+onMounted(() => {
+  fetchUsers();
 
+  // Log the email to check if it's correct
+  console.log("Logged-in user email:", authStore.user?.email);
+
+  if (authStore.user?.email === "user3@gmail.com") {
+    console.log("User is user3@gmail.com");
+    isUser3.value = true; // Set flag to disable chat access
+    activeTab.value = "dashboard"; // Force the activeTab to be 'dashboard'
+  }
+});
+
+// Save active tab to localStorage whenever it changes
 watch(activeTab, (newTab) => {
   localStorage.setItem("activeTab", newTab);
 });
 </script>
+
+
+
 
 <style scoped>
 @import url('https://fonts.cdnfonts.com/css/unbounded');
