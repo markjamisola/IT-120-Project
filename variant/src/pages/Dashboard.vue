@@ -4,42 +4,17 @@
     <div class="fixed-header">
       <v-app-bar app color="black navbar" class="px-5 py-1">
         <v-toolbar-title class="text-h5 font-weight-black title text-white">SendEase</v-toolbar-title>
-
         <v-spacer></v-spacer>
-
-        <!-- Logout Button -->
-        <v-btn
-          rounded="xl"
-          size="large"
-          variant="tonal"
-          @click="showLogoutConfirmation"
-        >
-          <v-icon color="white" left>mdi-logout</v-icon>
-          Logout
+        <v-btn rounded="xl" size="large" variant="tonal" @click="showLogoutConfirmation">
+          <v-icon color="white" left>mdi-logout</v-icon> Logout
         </v-btn>
-
-        <!-- Logout Confirmation Modal -->
         <v-dialog v-model="logoutModal" max-width="400">
           <v-card class="mx-auto pa-3" elevation="15" rounded="lg" color="black">
             <v-card-title class="font-weight-black text-center">Confirm Logout</v-card-title>
-            <v-card-text class="text-center">
-              Are you sure you want to log out?
-            </v-card-text>
+            <v-card-text class="text-center">Are you sure you want to log out?</v-card-text>
             <v-card-actions class="justify-center">
-              <v-btn
-                text
-                style="background-color: white; color: #803d3b; margin: 0 10px;"
-                @click="confirmLogout"
-              >
-                Yes
-              </v-btn>
-              <v-btn
-                text
-                style="background-color: #803d3b; color: white; margin: 0 10px;"
-                @click="cancelLogout"
-              >
-                Cancel
-              </v-btn>
+              <v-btn text style="background-color: white; color: #803d3b;" @click="confirmLogout">Yes</v-btn>
+              <v-btn text style="background-color: #803d3b; color: white;" @click="cancelLogout">Cancel</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -49,24 +24,29 @@
     <!-- Main Content -->
     <v-main class="custom-main">
       <v-container fluid class="main-container pa-8 rounded-lg">
-        <v-row v-if="activeTab === 'dashboard'">
+        <!-- Dashboard Tab -->
+        <v-row v-if="authStore.user?.email === 'admin@gmail.com' && activeTab === 'dashboard'">
           <v-col cols="12">
             <UserTable :userData="users" />
           </v-col>
         </v-row>
-        <v-row v-else-if="activeTab === 'chats'">
+
+        <!-- Chats Tab -->
+        <v-row v-else-if="authStore.user?.email !== 'admin@gmail.com' && activeTab === 'chats'">
           <v-col cols="12">
             <ChatBox />
           </v-col>
         </v-row>
+
+       
       </v-container>
     </v-main>
 
     <!-- Floating Buttons -->
     <div class="floating-buttons">
-      <!-- Show Dashboard Button only if the user is not user3@gmail.com -->
+      <!-- Dashboard button for Admin -->
       <v-btn
-        v-if="authStore.user?.email === 'mytakaf@mailinator.com'"
+        v-if="authStore.user?.email === 'admin@gmail.com'"
         class="floating-btn"
         dark
         style="background-color: white; color: black;"
@@ -75,10 +55,10 @@
       >
         <v-icon left>mdi-view-dashboard</v-icon> Dashboard
       </v-btn>
-      
-      <!-- Show Chats Button only if the user is user3@gmail.com -->
+
+      <!-- Messages button for non-admin -->
       <v-btn
-        v-if="authStore.user?.email !== 'mytakaf@mailinator.com'"
+        v-if="authStore.user?.email !== 'admin@gmail.com'"
         class="floating-btn"
         style="background-color: white; color: black;"
         dark
@@ -87,10 +67,11 @@
       >
         <v-icon left>mdi-chat</v-icon> Messages
       </v-btn>
+
+    
     </div>
   </v-app>
 </template>
-
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
@@ -103,9 +84,6 @@ const users = ref([]);
 const activeTab = ref(localStorage.getItem("activeTab") || "dashboard");
 const logoutModal = ref(false);
 const authStore = useAuthStore();
-
-// Flag to check if the logged-in user is user3@gmail.com
-const isUser3 = ref(false);
 
 // Fetch user data
 const fetchUsers = async () => {
@@ -126,39 +104,29 @@ const fetchUsers = async () => {
   }
 };
 
-// Handle the logout confirmation modal
-const showLogoutConfirmation = () => {
-  logoutModal.value = true;
-};
-
+// Logout modal handlers
+const showLogoutConfirmation = () => (logoutModal.value = true);
 const confirmLogout = () => {
   logoutModal.value = false;
   authStore.logout();
 };
+const cancelLogout = () => (logoutModal.value = false);
 
-const cancelLogout = () => {
-  logoutModal.value = false;
-};
-
-// Check if user is "user3@gmail.com" and restrict access to "chats"
 onMounted(() => {
   fetchUsers();
-
-  // Log the email to check if it's correct
-  console.log("Logged-in user email:", authStore.user?.email);
-
-  if (authStore.user?.email === "mytakaf@mailinator.com") {
-    console.log("User is user3@gmail.com");
-    isUser3.value = true; // Set flag to disable chat access
-    activeTab.value = "dashboard"; // Force the activeTab to be 'dashboard'
+  // Default tab based on user type
+  if (authStore.user?.email === "admin@gmail.com") {
+    activeTab.value = "dashboard";
+  } else {
+    activeTab.value = "chats";
   }
 });
 
-// Save active tab to localStorage whenever it changes
 watch(activeTab, (newTab) => {
   localStorage.setItem("activeTab", newTab);
 });
 </script>
+
 
 
 

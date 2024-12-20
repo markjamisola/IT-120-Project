@@ -14,7 +14,7 @@ const routes = setupLayouts([
   ...autoRoutes,
   { path: "/", component: Hero },
   { path: "/:pathMatch(.*)*", component: NotFound },
-  { path: "/Dashboard", component: Dashboard, meta: { requiresAuth: true } },
+  { path: "/App1", component: Dashboard, meta: { requiresAuth: true } },
   { path: "/Chat", component: ChatBase, meta: { requiresAuth: true } },
 ]);
 
@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
   const publicPages = ["/"];
 
   // Pages that require authentication
-  const protectedPages = ["/Dashboard", "/Chat"];
+  const protectedPages = ["/App1", "/Chat"];
 
   // Redirect to login if trying to access protected pages without being logged in
   if (protectedPages.includes(to.path) && !isAuthenticated) {
@@ -64,12 +64,12 @@ router.beforeEach((to, from, next) => {
   // Redirect admin to the dashboard on first login if they haven't visited it yet
   if (isAuthenticated && userRole === true && !hasVisitedDashboard) {
     localStorage.setItem("hasVisitedDashboard", "true"); // Set flag to true after visiting dashboard
-    return next("/Dashboard");
+    return next("/App1");
   }
 
   // Redirect to home if already logged in and trying to access public pages
   if (publicPages.includes(to.path) && isAuthenticated) {
-    return next("/Dashboard");
+    return next("/App1");
   }
 
   // If the route requires authentication and the user is not authenticated, redirect to login
@@ -77,7 +77,7 @@ router.beforeEach((to, from, next) => {
     next({ path: "/", query: { redirect: to.fullPath } });
   } else if (isAuthenticated && (to.path === "/" || to.path === "/")) {
     // Redirect authenticated users to the dashboard if they try to access login or home page
-    next("/Dashboard");
+    next("/App1");
   } else {
     // Default behavior: proceed to the requested route
     next();
