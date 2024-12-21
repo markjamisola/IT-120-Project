@@ -48,29 +48,24 @@
           <v-card-subtitle>
             <v-scroll-y class="message-container">
               <v-list class="lista">
-                      <v-list-item-group v-if="combinedMessages.length > 0">
-                        <v-list-item v-for="message in combinedMessages" :key="message.id">
-                          <v-list-item-content>
-                            <div
-                              class="message"
-                              :class="{
-                                'sent-message': message.isSentByMe,
-                                'received-message': !message.isSentByMe,
-                              }"
-                            >
-                              <div class="message-text">{{ message.content }}</div>
-                              <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
-                            </div>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-list-item-group>
-                      <v-list-item v-else>
-                        <v-list-item-content>
-                          <v-list-item-title>No messages yet...</v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
+                <v-list-item-group v-if="combinedMessages.length > 0">
+                  <v-list-item v-for="message in combinedMessages" :key="message.id">
+                    <v-list-item-content>
+                      <div class="message" :class="{'sent-message': message.isSentByMe, 'received-message': !message.isSentByMe}">
+                        <div class="message-text">{{ message.content }}</div>
+                        <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+                        <div class="message-meta">{{ message.meta }}</div>
+                      </div>
 
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+                <v-list-item v-else>
+                  <v-list-item-content>
+                    <v-list-item-title>No messages yet...</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
             </v-scroll-y>
           </v-card-subtitle>
 
@@ -105,7 +100,6 @@
   </v-container>
 </template>
 
-
 <script>
 import axios from "axios";
 import CryptoJS from "crypto-js";
@@ -130,21 +124,22 @@ export default {
   },
   computed: {
     filteredUsers() {
-    return this.users.filter(
-      (user) => user.id !== this.user.id && user.email !== "admin@gmail.com"
-    );
-  },
+      return this.users.filter(
+        (user) => user.id !== this.user.id && user.email !== "admin@gmail.com"
+      );
+    },
     combinedMessages() {
-  const messages = [...this.messages, ...this.replies]
+  return [...this.messages, ...this.replies]
     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
     .map((msg) => ({
       ...msg,
       isSentByMe: msg.sender_id === this.user.id,
+      meta: msg.sender_id === this.user.id
+        ? `Sent to: ${this.selectedReceiver.name}`
+        : `Sent by: ${msg.sender_name || this.selectedReceiver.name}`, // Correct sender's name
     }));
-  console.log("Combined Messages:", messages);
-  return messages;
-},
-
+}
+,
   },
   methods: {
     async fetchUserData() {
@@ -264,7 +259,7 @@ export default {
           this.fetchMessages();
           this.fetchReplies();
         }
-      }, 1000); // Poll every 2 seconds
+      }, 1000); // Poll every second
     },
     decryptMessage(encryptedContent) {
       try {
@@ -290,6 +285,13 @@ export default {
   font-size: 1.5em;
   font-weight: bold;
   font-family: "monospace";
+}
+
+
+.message-meta {
+  font-size: 0.8em;
+  color: gray;
+  margin-top: 0.2em;
 }
 
 .lista{

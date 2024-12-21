@@ -60,7 +60,12 @@
                       >
                         <div class="message-text">{{ message.content }}</div>
                         <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+                        <div class="message-details">
+                        <span>Sent by: {{ message.isSentByMe ? user.name : selectedReceiver.name }}</span>
+                        <span>Sent to: {{ message.isSentByMe ? selectedReceiver.name : user.name }}</span>
+                      </div>
                       </v-card>
+                       
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
@@ -286,6 +291,17 @@ export default {
 <style scoped>
 @import url('https://fonts.cdnfonts.com/css/unbounded');
 @import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+
+.message-details {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
 .headline {
   font-size: 1.5em;
   font-weight: bold;

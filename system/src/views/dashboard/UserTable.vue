@@ -1,6 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
-
+import { defineProps, computed } from "vue";
 
 const props = defineProps({
   userData: {
@@ -24,6 +23,11 @@ const headers = [
   },
 ];
 
+// Filter out the user with email "admin@gmail.com"
+const filteredUserData = computed(() => 
+  props.userData.filter(user => user.email !== "admin@gmail.com")
+);
+
 const resolveUserStatusVariant = (stat) => {
   const statLowerCase = stat.toLowerCase();
   if (statLowerCase === "pending") return "warning";
@@ -38,14 +42,13 @@ const resolveUserStatusVariant = (stat) => {
   <v-card class="table-card">
     <v-data-table
       :headers="headers"
-      :items="userData"
+      :items="filteredUserData"
       item-value="id"
       class=" custom-table"
     >
       <!-- User -->
       <template #item.username="{ item }">
         <div class="d-flex align-center" style="gap: 15px">
-
           <div class="d-flex flex-column">
             <h6 class="text-h6 font-weight-medium user-list-name">
               {{ item.username }}
@@ -68,9 +71,11 @@ const resolveUserStatusVariant = (stat) => {
     </v-data-table>
   </v-card>
 </template>
+
 <style scoped>
 @import url('https://fonts.cdnfonts.com/css/unbounded');
 @import url('https://fonts.cdnfonts.com/css/wix-madefor-display');
+
 .table-card {
   background-color: black; /* Card background color */
   border-radius: 12px; /* Rounded corners */
